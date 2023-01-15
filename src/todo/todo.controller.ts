@@ -1,53 +1,43 @@
-import { Body, Controller, Delete, Get, Param, Post, Put, HttpException, HttpStatus, Res, Req,Request, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Inject, Param, Post, Put, Req, Res, Response, Request, UseGuards, HttpException, HttpStatus, UseFilters } from '@nestjs/common';
 import { TodoService } from './todo.service';
 import { TodoDto } from './todo.dto';
 import { AuthGuard } from '../auth.guard';
-import { get } from 'http';
-import { TransformPipe } from '../transform.pipe';
+import { ModifyPrefixPipe } from '../modifyprefix.pipe';
+import { AllExceptionsFilter } from '../exception.filter';
 
 @UseGuards(AuthGuard)
 @Controller('/todo')
-export class TodoController {
-    constructor(private todoService: TodoService) {}
+export class TodoController { 
+    constructor(private todo: TodoService) {}
+
+    @Get('/')
+    public getAll() {
+        return this.todo
+    }
 
     @Get('/:id')
-    public async getOne(@Param('id') id: number) {
-        return await this.todoService.getOne(id)
+    public getOne(@Param('id') id: number) {
+        return this.todo.getOne(id)
+    }
+
+    @Get('pipes/:id')
+    public getOneWithPipe(@Param('id', new ModifyPrefixPipe('prefix_1')) id: string) {
+        throw new HttpException({ message: "Error"}, HttpStatus.BAD_REQUEST)
     }
 
     @Post('/')
-    public async create(
-        @Req() req: Request,
-        @Body() data: TodoDto
-    ) {
-        console.log(req.body)
-        return await this.todoService.create(data)
-    }
-
-    @Delete('/:id')
-    public async delete(@Param('id') id: number) {
-        return await this.todoService.delete(id)
+    public create(@Body() body: TodoDto) {
+        return this.todo.create(body)
     }
 
     @Put('/:id')
-    public async update(
-        @Param('id') id: number,
-        @Body() data: Partial<TodoDto>
-    ) {
-        return await this.todoService.update(id,data)
+    public update(@Param('id') id: number, @Body() body: TodoDto) {
+        return this.todo.update(id,body)
     }
 
-    @Get('/')
-    public async getAll() {
-        throw new HttpException(
-            { message: 'Ошибка' },
-            HttpStatus.BAD_REQUEST,
-        );
-    }
-
-    @Get('/pipes/:id')
-    public async getWithPipes(@Param('id', new TransformPipe('pipe')) id: string) {
-        return id
+    @Delete('/:id') 
+    public delete(@Param('id') id: number) {
+        return this.todo.delete(id)
     }
 
 }

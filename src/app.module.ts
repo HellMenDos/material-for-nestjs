@@ -1,11 +1,12 @@
+import { APP_FILTER } from '@nestjs/core';
+import { AllExceptionsFilter } from './exception.filter';
 import { TodoModule } from './todo/todo.module';
-import { MiddlewareConsumer, Module } from '@nestjs/common';
+import { Module, MiddlewareConsumer } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import Todo from './entity/Todo.entity';
-import { HttpExceptionFilter } from './http-exception.filter';
-import { FilterMiddleware } from './filter.middleware';
+import { Todo } from './entity/todo.entity';
+import { LogMiddleware } from './log.middleware';
 import { APP_INTERCEPTOR } from '@nestjs/core';
-import { LoggerInterceptor } from './logger.interceptor';
+import { LogInterceptor } from './log.interceptor';
 
 @Module({
   imports: [
@@ -17,24 +18,20 @@ import { LoggerInterceptor } from './logger.interceptor';
       username: 'root',
       password: 'root',
       database: 'test',
-      entities: [
-        Todo
-      ],
-      synchronize: true,
-    }),
+      entities: [Todo],
+      synchronize: true
+    })
   ],
   controllers: [],
   providers: [
     // {
     //   provide: APP_INTERCEPTOR,
-    //   useClass: LoggerInterceptor,
-    // },
+    //   useClass: LogInterceptor
+    // }
   ],
 })
 export class AppModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(FilterMiddleware)
-      .forRoutes('*');
-  }
+  // configure(consumer: MiddlewareConsumer) {
+  //   consumer.apply(LogMiddleware).forRoutes('*')
+  // }
 }

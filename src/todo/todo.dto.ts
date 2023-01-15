@@ -1,12 +1,11 @@
-import { ArrayMinSize, IsArray, IsBoolean, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsNotEmpty, IsString } from "class-validator"
 
 export class TodoDto {
-  @IsString()
-  @IsNotEmpty()
-  public title: string;
-
-  @IsString()
-  @IsNotEmpty()
-  public content: string;
-
+    @IsString()
+    @IsNotEmpty()
+    public title: string
+    
+    @IsString()
+    @IsNotEmpty()
+    public content: string
 }
